@@ -41,7 +41,7 @@ def resize_image(path_to_original, path_to_result, arg_width, arg_height, arg_sc
     new_name = make_new_name(path_to_original, (new_width, new_height))
     new_file_full_path = os.path.join(path_to_result, new_name)
     image.save(new_file_full_path)
-    return str(new_file_full_path)
+    return str(os.path.abspath(new_file_full_path))
 
 
 def make_new_name(file_path, image_size):
