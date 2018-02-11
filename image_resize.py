@@ -17,6 +17,8 @@ def get_args():
 
 
 def get_new_size(old_width, old_height, new_width, new_height, scale):
+    print("old=")
+    print(old_width, old_height)
     if scale is not None:
         return int(old_width * scale), int(old_height * scale)
     if new_width and new_height:
@@ -31,8 +33,8 @@ def resize_image(path_to_original, path_to_result, arg_width, arg_height, arg_sc
     image = Image.open(path_to_original)
     original_width, original_height = image.size
     new_width, new_height = get_new_size(
-        original_height,
         original_width,
+        original_height,
         arg_width,
         arg_height,
         arg_scale
