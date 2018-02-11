@@ -53,19 +53,27 @@ def make_new_name(file_path, image_size):
                                      )
 
 
-if __name__ == "__main__":
-    original_path, width, height, scale, output_path = get_args()
+def get_arguments_errors(original_path, width, height, scale, output_path):
     if not os.path.isfile(original_path):
-        exit("{} not exists".format(os.path.abspath(original_path)))
+        return "{} not exists".format(os.path.abspath(original_path))
     if scale and (width or height):
-        exit("Arguments error: Don't use --scale with --width and --height")
+        return "Arguments error: Don't use --scale with --width and --height"
     if scale is None and width is None and height is None:
-        exit("Arguments error: No arguments to resize. Start with --help")
-    if output_path is None:
-        output_path = os.path.dirname(os.path.abspath(original_path))
+        return "Arguments error: No arguments to resize. Start with --help"
     if not os.path.isdir(output_path):
-        exit("Error: {} is not existing folder".format(output_path))
+        return "Error: {} is not existing folder".format(output_path)
     if scale is None and (width and height):
         print("Warning: Proportions could be broken!")
+
+
+if __name__ == "__main__":
+    original_path, width, height, scale, output_path = get_args()
+    if output_path is None:
+        output_path = os.path.dirname(os.path.abspath(original_path))
+
+    arguments_errors = get_arguments_errors(original_path, width, height, scale, output_path)
+    if arguments_errors:
+        exit(arguments_errors)
+
     result_path = resize_image(original_path, output_path, width, height, scale)
     print("Done: \n{}".format(result_path))
