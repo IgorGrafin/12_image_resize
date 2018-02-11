@@ -22,9 +22,9 @@ optional arguments:
 ```
 
 You should use --scale or --width and/or --height.
+
 --output is optional defines the result image's folder
 
-About output file name:
 
 # Examples
 
