@@ -17,8 +17,6 @@ def get_args():
 
 
 def get_new_size(old_width, old_height, new_width, new_height, scale):
-    print("old=")
-    print(old_width, old_height)
     if scale is not None:
         return int(old_width * scale), int(old_height * scale)
     if new_width and new_height:
