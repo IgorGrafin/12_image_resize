@@ -3,7 +3,7 @@
 Install Pillow.
 ```pip install -r requirements.txt```
 
-It is better use virtual enviroments
+It is better to use virtual enviroments
 ```python3 -m venv venv```
 
 ## How to use
