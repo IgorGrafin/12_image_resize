@@ -81,7 +81,7 @@ if __name__ == "__main__":
     width = args.width
     height = args.height
     scale = args.scale
-    output_path = args.output
+    output_path = os.path.abspath(args.output)
     if output_path is None:
         output_path = os.path.dirname(original_path)
 
