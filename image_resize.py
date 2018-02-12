@@ -5,15 +5,37 @@ from PIL import Image
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("original_path", type=str, help="original image's path")
-    parser.add_argument("--width", type=int, help="width of output image")
-    parser.add_argument("--height", type=int, help="height of output image")
-    parser.add_argument("--scale", type=float, help="scale of output image. "
-                                                    "Don't use --width or --height"
-                                                    "if you use --scale")
-    parser.add_argument("--output", type=str, help="output image's path")
-    args = parser.parse_args()
-    return args.original_path, args.width, args.height, args.scale, args.output
+    parser.add_argument(
+        "original_path",
+        type=str,
+        help="original image's path"
+    )
+    parser.add_argument(
+        "--width",
+        type=int,
+        help="width of output image"
+    )
+    parser.add_argument(
+        "--height",
+        type=int,
+        help="height of output image"
+    )
+    parser.add_argument(
+        "--scale",
+        type=float,
+        help="scale of output image. Don't use --width "
+             "or --height if you use --scale")
+    parser.add_argument(
+        "--output",
+        type=str,
+        help="output image's path"
+    )
+    return parser.parse_args()
+
+
+def open_image(path_to_original):
+    image = Image.open(path_to_original)
+    return image
 
 
 def get_new_size(old_width, old_height, new_width, new_height, scale):
@@ -27,30 +49,19 @@ def get_new_size(old_width, old_height, new_width, new_height, scale):
         return int(old_width * new_height / old_height), new_height
 
 
-def resize_image(path_to_original, path_to_result, arg_width, arg_height, arg_scale):
-    image = Image.open(path_to_original)
-    original_width, original_height = image.size
-    new_width, new_height = get_new_size(
-        original_width,
-        original_height,
-        arg_width,
-        arg_height,
-        arg_scale
-    )
+def resize_image(image, new_file_full_path, new_width, new_height):
     image = image.resize((new_width, new_height))
-    new_name = make_new_name(path_to_original, (new_width, new_height))
-    new_file_full_path = os.path.join(path_to_result, new_name)
     image.save(new_file_full_path)
-    return str(os.path.abspath(new_file_full_path))
 
 
-def make_new_name(file_path, image_size):
-    original_name = os.path.split(file_path)[1].split(".")[0]
-    return "{0}__{1}x{2}.{3}".format(str(original_name),
-                                     str(image_size[0]),
-                                     str(image_size[1]),
-                                     str(os.path.split(file_path)[1].split(".")[1])
-                                     )
+def make_output_full_path(orig_path, width, height):
+    file_name, extension = os.path.splitext(original_path)
+    return "{0}__{1}x{2}{3}".format(
+        file_name,
+        width,
+        height,
+        extension
+    )
 
 
 def get_arguments_errors(original_path, width, height, scale, output_path):
@@ -58,22 +69,47 @@ def get_arguments_errors(original_path, width, height, scale, output_path):
         return "{} not exists".format(os.path.abspath(original_path))
     if scale and (width or height):
         return "Arguments error: Don't use --scale with --width and --height"
-    if scale is None and width is None and height is None:
+    if not any([scale, width, height]):
         return "Arguments error: No arguments to resize. Start with --help"
     if not os.path.isdir(output_path):
         return "Error: {} is not existing folder".format(output_path)
-    if scale is None and (width and height):
-        print("Warning: Proportions could be broken!")
 
 
 if __name__ == "__main__":
-    original_path, width, height, scale, output_path = get_args()
+    args = get_args()
+    original_path = os.path.abspath(args.original_path)
+    width = args.width
+    height = args.height
+    scale = args.scale
+    output_path = args.output
     if output_path is None:
-        output_path = os.path.dirname(os.path.abspath(original_path))
+        output_path = os.path.dirname(original_path)
 
-    arguments_errors = get_arguments_errors(original_path, width, height, scale, output_path)
+    arguments_errors = get_arguments_errors(
+        original_path,
+        width,
+        height,
+        scale,
+        output_path
+    )
+
     if arguments_errors:
         exit(arguments_errors)
 
-    result_path = resize_image(original_path, output_path, width, height, scale)
-    print("Done: \n{}".format(result_path))
+    if scale is None and (width and height):
+        print("Warning: Proportions could be broken!")
+
+    original_image = open_image(original_path)
+    original_width, original_height = original_image.size
+
+    new_width, new_height = get_new_size(
+        original_width,
+        original_height,
+        width,
+        height,
+        scale
+    )
+
+    new_file_full_path = make_output_full_path(original_path, new_width, new_height)
+    resize_image(original_image, new_file_full_path, new_width, new_height)
+    print("Done: \n{}".format(new_file_full_path))
