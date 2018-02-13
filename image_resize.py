@@ -54,10 +54,10 @@ def resize_image(image, new_file_full_path, new_width, new_height):
     image.save(new_file_full_path)
 
 
-def make_output_full_path(orig_path, width, height):
-    file_name, extension = os.path.splitext(original_path)
+def make_output_full_path(orig_path, out_path, width, height):
+    orig_name, extension = os.path.splitext(orig_path)
     return "{0}__{1}x{2}{3}".format(
-        file_name,
+        os.path.join(out_path, os.path.split(orig_name)[1]),
         width,
         height,
         extension
@@ -110,6 +110,6 @@ if __name__ == "__main__":
         scale
     )
 
-    new_file_full_path = make_output_full_path(original_path, new_width, new_height)
+    new_file_full_path = make_output_full_path(original_path, output_path, new_width, new_height)
     resize_image(original_image, new_file_full_path, new_width, new_height)
     print("Done: \n{}".format(new_file_full_path))
